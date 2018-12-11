@@ -34,8 +34,6 @@ class User():
         self.ocn = None # This is the Ocean API instance, per User
         self.account = None
 
-
-
         if config_path:
             # If a config file is directly provided, this User is instantiated directly
             self.ocn = Ocean(config_path)
@@ -58,9 +56,9 @@ class User():
 
 
         acct_dict_lower = {k.lower(): v for k, v in self.ocn.accounts.items()}
-        if s: # If this attribute exists, the password is stored
+        if self.ocn.main_account: # If this attribute exists, the password is stored
             self.credentials = True
-            self.account =acct_dict_lower[self.ocn.main_account]
+            self.account = self.ocn.main_account
         else:
             raise ValueError
         logging.info(self)
@@ -97,14 +95,19 @@ class User():
         return self.__str__()
 
 def get_all_users(addresses):
+    users = list()
     if get_deployment_type() == 'DEFAULT':
-        users = list()
         for i, acct_address in enumerate(addresses):
             user_name = "User_"+str(i)
             user = User(user_name, "Role", acct_address)
             users.append(user)
     elif get_deployment_type() == 'USE_K8S_CLUSTER' or get_deployment_type() == 'JUPYTER_DEPLOYMENT':
-        get_project_path().glob()
+        user_config_path = get_project_path() / 'user_configurations_deployed'
+        assert user_config_path.exists()
+        for conf_file in user_config_path.glob('*.ini'):
+            name = ' '.join(conf_file.name.split('_')[0:2])
+            user = User(name, role="Ocean User", address=None, password=None, config_template_path=None, config_path=conf_file)
+            users.append(user)
     return users
 
 def get_user(role = 'Data Owner'):
