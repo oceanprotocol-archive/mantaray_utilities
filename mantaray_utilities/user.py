@@ -4,7 +4,7 @@ The User() class, a helper class for simulating users of Ocean Protocol.
 import logging
 import configparser
 import logging
-from .config import get_config_file_path
+from .config import get_config_file_path, get_deployment_type, get_project_path
 from squid_py.ocean.ocean import Ocean
 from pathlib import Path
 # assert PATH_CONFIG.exists(), "{} does not exist".format(PATH_CONFIG)
@@ -56,12 +56,13 @@ class User():
             # If nothing is provided, raise an error
             raise ValueError("A User object requires a config.ini file, or a template and password.")
 
+
         acct_dict_lower = {k.lower(): v for k, v in self.ocn.accounts.items()}
-        self.account = acct_dict_lower[self.address.lower()]
-        if self.ocn.main_account: # If this attribute exists, the password is stored
+        if s: # If this attribute exists, the password is stored
             self.credentials = True
-        acct_dict_lower = {k.lower(): v for k, v in self.ocn.accounts.items()}
-        self.account = acct_dict_lower[self.address.lower()]
+            self.account =acct_dict_lower[self.ocn.main_account]
+        else:
+            raise ValueError
         logging.info(self)
 
     def create_config(self, password):
@@ -96,11 +97,14 @@ class User():
         return self.__str__()
 
 def get_all_users(addresses):
-    users = list()
-    for i, acct_address in enumerate(addresses):
-        user_name = "User_"+str(i)
-        user = User(user_name, "Role", acct_address)
-        users.append(user)
+    if get_deployment_type() == 'DEFAULT':
+        users = list()
+        for i, acct_address in enumerate(addresses):
+            user_name = "User_"+str(i)
+            user = User(user_name, "Role", acct_address)
+            users.append(user)
+    elif get_deployment_type() == 'USE_K8S_CLUSTER' or get_deployment_type() == 'JUPYTER_DEPLOYMENT':
+        get_project_path().glob()
     return users
 
 def get_user(role = 'Data Owner'):
