@@ -110,5 +110,25 @@ def get_all_users(addresses):
             users.append(user)
     return users
 
+def get_first_user(addresses):
+    """Get the first encountered user in the list of accounts, or first in the .ini files
+    TODO: Refactor
+    :param addresses:
+    :return:
+    """
+    if get_deployment_type() == 'DEFAULT':
+        for i, acct_address in enumerate(addresses):
+            user_name = "User_"+str(i)
+            user = User(user_name, "Role", acct_address)
+            break
+    elif get_deployment_type() == 'USE_K8S_CLUSTER' or get_deployment_type() == 'JUPYTER_DEPLOYMENT':
+        user_config_path = get_project_path() / 'user_configurations_deployed'
+        assert user_config_path.exists()
+        for conf_file in user_config_path.glob('*.ini'):
+            name = ' '.join(conf_file.name.split('_')[0:2])
+            user = User(name, role="Ocean User", address=None, password=None, config_template_path=None, config_path=conf_file)
+            break
+    return user
+
 def get_user(role = 'Data Owner'):
     return User
