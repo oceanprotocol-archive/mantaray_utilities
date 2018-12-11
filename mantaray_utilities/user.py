@@ -10,15 +10,8 @@ from pathlib import Path
 # assert PATH_CONFIG.exists(), "{} does not exist".format(PATH_CONFIG)
 PATH_CONFIG = get_config_file_path()
 
-PASSWORD_MAP = {
-    '0x00bd138abd70e2f00903268f3db08f2d25677c9e' : 'node0',
-    '0x068ed00cf0441e4829d9784fcbe7b9e26d4bd8d0' : 'secret',
-    '0xa99d43d86a0758d5632313b8fa3972b6088a21bb' : 'secret',
-    # '0x64137af0104d2c96c44bb04ac06f09ec84cc5ae4' : '',
-}
-
 class User():
-    def __init__(self, name, role, address, config_path=None):
+    def __init__(self, name, role, address, password=None, config_path=None):
         """
         A class to represent a User of Ocean Protocol.
         A User's account can be *locked*. To unlock an account, provide the password to the .unlock() method.
@@ -27,6 +20,7 @@ class User():
         :param role: Also just for personalizing
         :param address: This the account address
         :param config_path: The Ocean() library class *requires* a config file
+        :param password: The password for this address
         """
         self.name = name
         self.address = address
@@ -38,9 +32,8 @@ class User():
         self.account = None
 
         # If the account is unlocked, instantiate Ocean and the Account classes
-        if self.address.lower() in PASSWORD_MAP:
-            logging.debug("Found password entry for this address")
-            password = PASSWORD_MAP[self.address.lower()]
+        if password:
+            # logging.debug("Found password entry for this address")
 
             # The ocean class REQUIRES a .ini file -> need to create this file!
             if not self.config_path:
@@ -57,7 +50,7 @@ class User():
 
         logging.info(self)
 
-    def create_config(self,password):
+    def create_config(self, password):
         """Fow now, a new config.ini file must be created and passed into Ocean for instantiation"""
         conf = configparser.ConfigParser()
         conf.read(str(PATH_CONFIG))
