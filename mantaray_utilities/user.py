@@ -11,34 +11,39 @@ from pathlib import Path
 PATH_CONFIG = get_config_file_path()
 
 class User():
-    def __init__(self, name, role, address, password=None, config_path=None):
+    def __init__(self, name, role, address, password=None, config_template_path=None, config_path=None):
         """
-        A class to represent a User of Ocean Protocol.
-        A User's account can be *locked*. To unlock an account, provide the password to the .unlock() method.
 
         :param name: Just to keep track and personalize the simulation
         :param role: Also just for personalizing
         :param address: This the account address
-        :param config_path: The Ocean() library class *requires* a config file, this is the template to use
         :param password: The password for this address
+        :param config_template_path: The Ocean() library class *requires* a config file, this is the template
+        :param config_path: Or, the address and password are stored in a file already
         """
         self.name = name
         self.address = address
         self.role = role
         self.credentials = False # Does this config file have a user address and pasword?
-        if not config_path:
-            self.config_path = PATH_CONFIG
+        if not config_template_path:
+            self.config_template_path = PATH_CONFIG
         else:
-            self.config_path = config_path
+            self.config_template_path = config_template_path
+        self.config_path = config_path
 
-        self.ocn = None
+        self.ocn = None # This is the Ocean API instance, per User
         self.account = None
 
-        # If the account is unlocked, instantiate Ocean and the Account classes
-        if password:
-            # logging.debug("Found password entry for this address")
 
-            # The ocean class REQUIRES a .ini file -> need to create this file!
+
+        if config_path:
+            # If a config file is directly provided, this User is instantiated directly
+            self.ocn = Ocean(config_path)
+            logging.info("User instantiated from provided configuration file".format())
+        elif password and config_template_path:
+            # If the account is unlocked, instantiate Ocean and the Account classes
+
+            # The ocean class REQUIRES a .ini file on instantiation -> need to create this file!
             self.config_fname = "{}_{}_config.ini".format(self.name,self.role).replace(' ', '_')
             this_config_path = self.create_config(password) # Create configuration file for this user
 
@@ -46,17 +51,24 @@ class User():
             self.ocn = Ocean(this_config_path)
             if self.ocn.main_account: # If this attribute exists, the password is stored
                 self.credentials = True
-            # self.unlock(password)
-            acct_dict_lower = {k.lower(): v for k, v in self.ocn.accounts.items()}
-            self.account = acct_dict_lower[self.address.lower()]
+            logging.info("User instantiated from a newly created configuration file based on template".format())
+        else:
+            # If nothing is provided, raise an error
+            raise ValueError("A User object requires a config.ini file, or a template and password.")
 
+        acct_dict_lower = {k.lower(): v for k, v in self.ocn.accounts.items()}
+        self.account = acct_dict_lower[self.address.lower()]
+        if self.ocn.main_account: # If this attribute exists, the password is stored
+            self.credentials = True
+        acct_dict_lower = {k.lower(): v for k, v in self.ocn.accounts.items()}
+        self.account = acct_dict_lower[self.address.lower()]
         logging.info(self)
 
     def create_config(self, password):
         """Fow now, a new config.ini file must be created and passed into Ocean for instantiation"""
         conf = configparser.ConfigParser()
         # Read in the config template file, and modify it
-        conf.read(str(self.config_path))
+        conf.read(str(self.config_template_path))
         conf['keeper-contracts']['parity.address'] = self.address
         conf['keeper-contracts']['parity.password'] = password
         out_path = Path.cwd() / 'user_configurations' / self.config_fname
