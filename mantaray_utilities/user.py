@@ -19,14 +19,17 @@ class User():
         :param name: Just to keep track and personalize the simulation
         :param role: Also just for personalizing
         :param address: This the account address
-        :param config_path: The Ocean() library class *requires* a config file
+        :param config_path: The Ocean() library class *requires* a config file, this is the template to use
         :param password: The password for this address
         """
         self.name = name
         self.address = address
         self.role = role
         self.credentials = False # Does this config file have a user address and pasword?
-        self.config_path = config_path
+        if not config_path:
+            self.config_path = PATH_CONFIG
+        else:
+            self.config_path = config_path
 
         self.ocn = None
         self.account = None
@@ -36,12 +39,11 @@ class User():
             # logging.debug("Found password entry for this address")
 
             # The ocean class REQUIRES a .ini file -> need to create this file!
-            if not self.config_path:
-                self.config_fname = "{}_{}_config.ini".format(self.name,self.role).replace(' ', '_')
-                config_path = self.create_config(password) # Create configuration file for this user
+            self.config_fname = "{}_{}_config.ini".format(self.name,self.role).replace(' ', '_')
+            this_config_path = self.create_config(password) # Create configuration file for this user
 
             # Instantiate Ocean and Account for this User
-            self.ocn = Ocean(config_path)
+            self.ocn = Ocean(this_config_path)
             if self.ocn.main_account: # If this attribute exists, the password is stored
                 self.credentials = True
             # self.unlock(password)
@@ -53,7 +55,8 @@ class User():
     def create_config(self, password):
         """Fow now, a new config.ini file must be created and passed into Ocean for instantiation"""
         conf = configparser.ConfigParser()
-        conf.read(str(PATH_CONFIG))
+        # Read in the config template file, and modify it
+        conf.read(str(self.config_path))
         conf['keeper-contracts']['parity.address'] = self.address
         conf['keeper-contracts']['parity.password'] = password
         out_path = Path.cwd() / 'user_configurations' / self.config_fname
