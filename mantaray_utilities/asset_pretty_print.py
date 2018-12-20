@@ -31,7 +31,7 @@ def print_ocean(ocn):
     print("{:>40} {}".format("Token contract address:", ocn.keeper.token.address))
     print("{:>40} {}".format("Authentication contract at address:", ocn.keeper.auth.address))
     print("{:>40} {}".format("Market contract address:", ocn.keeper.market.address))
-    print("{:>40} {}".format("DID Registry contract address:", ocn.keeper.didregistry.address))
+    print("{:>40} {}".format("DID Registry contract address:", ocn.keeper.did_registry.address))
 
     print("\n***METADATA STORE (aquarius)***")
     print("Connect at: {}".format(ocn.metadata_store._base_url))
