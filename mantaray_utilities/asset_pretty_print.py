@@ -29,7 +29,7 @@ def print_ocean(ocn):
     print("Keeper node connected at {}".format(ocn.config.keeper_url))
     print("Using ABI files from {}".format(ocn.config.keeper_path))
     print("{:>40} {}".format("Token contract address:", ocn.keeper.token.address))
-    print("{:>40} {}".format("Authentication contract at address:", ocn.keeper.auth.address))
+    # print("{:>40} {}".format("Authentication contract at address:", ocn.keeper.auth.address))
     print("{:>40} {}".format("Market contract address:", ocn.keeper.market.address))
     print("{:>40} {}".format("DID Registry contract address:", ocn.keeper.did_registry.address))
 
