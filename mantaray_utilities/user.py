@@ -130,5 +130,10 @@ def get_first_user(addresses):
             break
     return user
 
+def account_unlocked(acct):
+    # TODO:
+    from squid_py.keeper.web3_provider import Web3Provider
+    Web3Provider.get_web3().eth.sign(my_acct.address, text="")
+
 def get_user(role = 'Data Owner'):
     return User
