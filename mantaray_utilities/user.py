@@ -16,6 +16,7 @@ def password_map(address, password_dict):
     if str.lower(address) in password_dict:
         password = password_dict[str.lower(address)]
         return password
+        # logging.debug("Found password".format())
     else:
         return False
 
