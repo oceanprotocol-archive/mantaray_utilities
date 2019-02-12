@@ -1,0 +1,25 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "30f82681a0dc8c5ac306b490f3a3fe891e8148788f326ab4f4604291298af4ad"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.7"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "mantaray-utilities": {
+            "editable": true,
+            "path": "."
+        }
+    },
+    "develop": {}
+}
