@@ -3,33 +3,37 @@ import logging
 from pathlib import Path
 
 CONFIG_MAP = {
-    'JUPYTER_DEPLOYMENT' : {
-        'config_ini_name':'config_jupyter.ini',
+    'JUPYTER_DEPLOYMENT': {
+        'config_ini_name': 'config_jupyter.ini',
     },
-    'USE_K8S_CLUSTER' : {
-        'config_ini_name':'config_k8s_deployed.ini',
+    'JUPYTER_DEPLOYMENT_TEST': {
+        'config_ini_name': 'config_local.ini',
     },
-    'DEFAULT' : {
-        'config_ini_name':'config_local.ini',
+    'USE_K8S_CLUSTER': {
+        'config_ini_name': 'config_k8s_deployed.ini',
+    },
+    'DEFAULT': {
+        'config_ini_name': 'config_local.ini',
     },
 }
 SCRIPT_FOLDERS = ['0_notebooks_verify', '1_notebooks_blocks', '2_notebooks_use_cases', '3_notebooks_demos']
 
 def get_deployment_type():
     if 'JUPYTER_DEPLOYMENT' in os.environ:
-        # logging.info("Environment configuration detected: JupyterHub cluster.".format())
         return 'JUPYTER_DEPLOYMENT'
     if 'USE_K8S_CLUSTER' in os.environ:
-        # logging.info("Environment configuration detected: Use deployed k8s endpoints.".format())
         return 'USE_K8S_CLUSTER'
+    if 'JUPYTER_DEPLOYMENT_TEST' in os.environ:
+        return 'JUPYTER_DEPLOYMENT_TEST'
     else:
-        # logging.info("Environment configuration detected: Local machine with start-ocean local components.".format())
         return 'DEFAULT'
 
 def name_deployment_type():
     if 'JUPYTER_DEPLOYMENT' in os.environ:
         logging.info("Environment configuration detected: JupyterHub cluster.".format())
-    if 'USE_K8S_CLUSTER' in os.environ:
+    elif 'JUPYTER_DEPLOYMENT_TEST' in os.environ:
+        logging.info("Environment configuration detected: JupyterLab local testing.".format())
+    elif 'USE_K8S_CLUSTER' in os.environ:
         logging.info("Environment configuration detected: Use deployed k8s endpoints.".format())
     else:
         logging.info("Environment configuration detected: Local machine with start-ocean local components.".format())
@@ -50,6 +54,9 @@ def get_project_path():
         # else:
         #     print("JUPYTER_DEPLOYMENT is set, but can't find the correct paths!")
         #     raise EnvironmentError
+    elif get_deployment_type() == 'JUPYTER_DEPLOYMENT_TEST':
+        this_path =  Path.cwd() / '..' / '..'
+        return this_path.resolve()
     elif get_deployment_type() == 'USE_K8S_CLUSTER':
         return Path.cwd()
     elif get_deployment_type() == 'DEFAULT':
