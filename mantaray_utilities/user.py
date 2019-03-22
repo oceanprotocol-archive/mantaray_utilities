@@ -12,6 +12,20 @@ from pathlib import Path
 import csv
 import os
 
+from squid_py.accounts.account import Account
+from squid_py.keeper import Keeper
+from squid_py.keeper.web3_provider import Web3Provider
+
+def get_account_from_config(config, config_account_key, config_account_password_key):
+    address = config.get('keeper-contracts', config_account_key)
+    address = Web3Provider.get_web3().toChecksumAddress(address)
+    password = config.get('keeper-contracts', config_account_password_key)
+
+    logging.info("Account:{}={} {}={} ".format(config_account_key, address,config_account_password_key, password))
+    return Account(address, password)
+
+
+
 def password_map(address, password_dict):
     if str.lower(address) in password_dict:
         password = password_dict[str.lower(address)]
