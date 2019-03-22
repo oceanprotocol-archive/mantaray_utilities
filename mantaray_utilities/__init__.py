@@ -1,5 +1,5 @@
 __author__ = """OceanProtocol"""
-__version__ = '0.0.7'
+__version__ = '0.0.8'
 from . import asset_pretty_print
 from . import config
 from . import general
