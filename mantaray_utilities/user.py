@@ -22,6 +22,13 @@ from squid_py.keeper.web3_provider import Web3Provider
 
 
 def get_account_from_config(config, config_account_key, config_account_password_key):
+    """ Get the account as specified in the config file
+
+    :param config:
+    :param config_account_key:
+    :param config_account_password_key:
+    :return:
+    """
     address = config.get('keeper-contracts', config_account_key)
     address = Web3Provider.get_web3().toChecksumAddress(address)
     password = config.get('keeper-contracts', config_account_password_key)
@@ -50,7 +57,12 @@ def load_passwords_environ():
     return load_passwords(os.environ['PASSWORD_PATH'])
 
 def load_passwords(path_passwords):
-    # Get passwords from account, password CSV file
+    """Load password file into an address:password dictionary
+
+    :param path_passwords:
+    :return: dict
+    """
+
     assert os.path.exists(path_passwords)
     passwords = dict()
     with open(path_passwords) as f:
@@ -68,6 +80,14 @@ def get_password(path_passwords, account):
 
 
 def get_account(ocn):
+    """Utility to get a random account
+    Account exists in the environment variable for the passwords filej
+    Account must have a password
+    Account must have positive ETH balance
+
+    :param ocn:
+    :return:
+    """
     password_dict = load_passwords_environ()
 
     addresses = [str.lower(addr) for addr in password_dict.keys()]
@@ -77,9 +97,6 @@ def get_account(ocn):
         # Only select the allowed accounts
         if str.lower(acct.address) not in addresses:
             continue
-        # print(acct.address)
-        # print("PW:", password_map(acct.address, password_dict))
-        # print('BAL:', ocn.accounts.balance(acct).eth/10**18)
         # Only select accounts with positive ETH balance
         if ocn.accounts.balance(acct).eth/10**18 < 1:
             continue
@@ -89,4 +106,30 @@ def get_account(ocn):
     this_account.password = password_map(this_account.address, password_dict)
     assert this_account.password, "No password loaded for {}".format(this_account.address)
     return this_account
+
+def get_account_by_index(ocn, acct_number):
+    """Utility to get one of the available accounts by index (as listed in the password file)
+    Account exists in the environment variable for the passwords file
+    Account must have password
+
+    :param ocn:
+    :param acct_number:
+    :return:
+    """
+    password_dict = load_passwords_environ()
+
+    addresses = [str.lower(addr) for addr in password_dict.keys()]
+
+    possible_accounts = list()
+    for acct in ocn.accounts.list():
+        # Only select the allowed accounts
+        if str.lower(acct.address) not in addresses:
+            continue
+        possible_accounts.append(acct)
+
+    this_account = possible_accounts[acct_number]
+    this_account.password = password_map(this_account.address, password_dict)
+    assert this_account.password, "No password loaded for {}".format(this_account.address)
+    return this_account
+
 
