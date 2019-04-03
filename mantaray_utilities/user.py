@@ -63,7 +63,7 @@ def load_passwords(path_passwords):
     :return: dict
     """
 
-    assert os.path.exists(path_passwords)
+    assert os.path.exists(path_passwords), "Password file not found: {}".format(path_passwords)
     passwords = dict()
     with open(path_passwords) as f:
         for row in csv.reader(f):
