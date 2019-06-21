@@ -11,7 +11,7 @@ def subscribe_AGREEMENT_CREATED_EVENT(keeper, agreement_id):
     event = keeper.escrow_access_secretstore_template.subscribe_agreement_created(
         agreement_id,
         60,
-        _log_event(keeper.escrow_access_secretstore_template.AGREEMENT_CREATED_EVENT),
+        _log_event('EscrowAccessSecretStoreTemplate.AgreementCreated'),
         (),
         wait=True
     )
@@ -21,7 +21,7 @@ def subscribe_Fulfilled_LockRewardCondition(keeper, agreement_id):
     event = keeper.lock_reward_condition.subscribe_condition_fulfilled(
         agreement_id,
         60,
-        _log_event(keeper.lock_reward_condition.FULFILLED_EVENT),
+        _log_event('LockRewardCondition.Fulfilled'),
         (),
         wait=True
     )
@@ -31,7 +31,7 @@ def subscribe_Fulfilled_AccessSecretStoreCondition(keeper, agreement_id):
     event = keeper.access_secret_store_condition.subscribe_condition_fulfilled(
         agreement_id,
         60,
-        _log_event(keeper.escrow_reward_condition.FULFILLED_EVENT),
+        _log_event('AccessSecretStoreCondition.Fulfilled'),
         (),
         wait=True
     )
@@ -41,7 +41,7 @@ def subscribe_Fulfilled_EscrowReward(keeper, agreement_id):
     event = keeper.escrow_reward_condition.subscribe_condition_fulfilled(
         agreement_id,
         60,
-        _log_event(keeper.escrow_reward_condition.FULFILLED_EVENT),
+        _log_event('EscrowReward.Fulfilled'),
         (),
         wait=True
     )
