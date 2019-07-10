@@ -17,7 +17,7 @@ print()
 setup(
     name='mantaray_utilities',
     author="leucothia",
-    version='0.2.2',
+    version='0.2.3',
     author_email='devops@oceanprotocol.com',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
