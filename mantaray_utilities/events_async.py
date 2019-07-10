@@ -7,24 +7,26 @@ def _log_event(event_name):
 
     return _process_event
 
-def subscribe_AGREEMENT_CREATED_EVENT(keeper, agreement_id):
-    event = keeper.escrow_access_secretstore_template.subscribe_agreement_created(
+async def subscribe_AGREEMENT_CREATED_EVENT(keeper, agreement_id):
+    event = await keeper.escrow_access_secretstore_template.subscribe_agreement_created(
         agreement_id,
         60,
         _log_event('EscrowAccessSecretStoreTemplate.AgreementCreated'),
         (),
         wait=True
     )
+    print('EscrowAccessSecretStoreTemplate.AgreementCreated')
     assert event, 'no event for EscrowAccessSecretStoreTemplate.AgreementCreated'
 
-def subscribe_Fulfilled_LockRewardCondition(keeper, agreement_id):
-    event = keeper.lock_reward_condition.subscribe_condition_fulfilled(
+async def subscribe_Fulfilled_LockRewardCondition(keeper, agreement_id):
+    event = await keeper.lock_reward_condition.subscribe_condition_fulfilled(
         agreement_id,
         60,
         _log_event('LockRewardCondition.Fulfilled'),
         (),
         wait=True
     )
+    print('LockRewardCondition.Fulfilled')
     assert event, 'no event for LockRewardCondition.Fulfilled'
 
 def subscribe_Fulfilled_AccessSecretStoreCondition(keeper, agreement_id):
