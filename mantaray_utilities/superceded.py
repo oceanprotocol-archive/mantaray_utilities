@@ -1,5 +1,5 @@
 
-class User():
+class User:
     def __init__(self, name, role, address, password=None, config_template_path=None, config_path=None):
         """
 
@@ -101,6 +101,7 @@ def get_all_users(addresses):
             users.append(user)
     return users
 
+
 def get_first_user(addresses):
     """Get the first encountered user in the list of accounts, or first in the .ini files
     TODO: Refactor
@@ -121,10 +122,12 @@ def get_first_user(addresses):
             break
     return user
 
+
 def account_unlocked(acct):
     # TODO:
     from squid_py.keeper.web3_provider import Web3Provider
     Web3Provider.get_web3().eth.sign(my_acct.address, text="")
+
 
 def get_user(role = 'Data Owner'):
     return User

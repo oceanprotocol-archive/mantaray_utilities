@@ -1,6 +1,5 @@
 import os
 import logging
-from pathlib import Path
 
 CONFIG_MAP = {
     'JUPYTER_DEPLOYMENT': {
@@ -18,6 +17,7 @@ CONFIG_MAP = {
 }
 SCRIPT_FOLDERS = ['0_notebooks_verify', '1_notebooks_blocks', '2_notebooks_use_cases', '3_notebooks_demos']
 
+
 def get_deployment_type():
     if 'JUPYTER_DEPLOYMENT' in os.environ:
         return 'JUPYTER_DEPLOYMENT'
@@ -27,6 +27,7 @@ def get_deployment_type():
         return 'JUPYTER_DEPLOYMENT_TEST'
     else:
         return 'DEFAULT'
+
 
 def name_deployment_type():
     if 'JUPYTER_DEPLOYMENT' in os.environ:
@@ -38,11 +39,13 @@ def name_deployment_type():
     else:
         logging.info("Environment configuration detected: Local machine with start-ocean local components.".format())
 
+
 def get_config_file_path():
     # The configuration ini file is in the root of the project
     proj_path = get_project_path() / CONFIG_MAP[get_deployment_type()]['config_ini_name']
     assert proj_path.exists(), "{} not found".format(proj_path)
     return proj_path
+
 
 def get_project_path():
     if get_deployment_type() == 'JUPYTER_DEPLOYMENT':

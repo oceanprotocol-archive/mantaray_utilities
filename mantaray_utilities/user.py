@@ -2,39 +2,9 @@
 The User() class, a helper class for simulating users of Ocean Protocol.
 """
 import logging
-import configparser
-import logging
-from .config import get_config_file_path, get_deployment_type, get_project_path
-from squid_py.ocean.ocean import Ocean
-from pathlib import Path
-# assert PATH_CONFIG.exists(), "{} does not exist".format(PATH_CONFIG)
-# PATH_CONFIG = get_config_file_path()
 import csv
 import os
 import random
-
-from squid_py.accounts.account import Account
-from squid_py.keeper import Keeper
-from squid_py.keeper.web3_provider import Web3Provider
-
-
-# os.environ['PASSWORD_PATH']
-
-
-def get_account_from_config(config, config_account_key, config_account_password_key):
-    """ Get the account as specified in the config file
-
-    :param config:
-    :param config_account_key:
-    :param config_account_password_key:
-    :return:
-    """
-    address = config.get('keeper-contracts', config_account_key)
-    address = Web3Provider.get_web3().toChecksumAddress(address)
-    password = config.get('keeper-contracts', config_account_password_key)
-
-    logging.info("Account:{}={} {}={} ".format(config_account_key, address,config_account_password_key, password))
-    return Account(address, password)
 
 
 def password_map(address, password_dict):
@@ -56,6 +26,7 @@ def load_passwords_environ():
     assert 'PASSWORD_PATH' in os.environ
     return load_passwords(os.environ['PASSWORD_PATH'])
 
+
 def load_passwords(path_passwords):
     """Load password file into an address:password dictionary
 
@@ -73,10 +44,6 @@ def load_passwords(path_passwords):
     passwords = {k.lower(): v for k, v in passwords.items()}
     logging.info("{} account-password pairs loaded".format(len(passwords)))
     return passwords
-
-
-def get_password(path_passwords, account):
-    passwords = load_passwords(path_passwords)
 
 
 def get_account(ocn):
@@ -107,6 +74,7 @@ def get_account(ocn):
     assert this_account.password, "No password loaded for {}".format(this_account.address)
     return this_account
 
+
 def get_account_by_index(ocn, acct_number):
     """Utility to get one of the available accounts by index (as listed in the password file)
     Account exists in the environment variable for the passwords file
@@ -131,5 +99,3 @@ def get_account_by_index(ocn, acct_number):
     this_account.password = password_map(this_account.address, password_dict)
     assert this_account.password, "No password loaded for {}".format(this_account.address)
     return this_account
-
-

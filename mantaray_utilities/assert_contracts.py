@@ -5,7 +5,8 @@ import pip_api
 import json
 from pathlib import Path
 import logging
-from squid_py.keeper.web3_provider import Web3Provider
+from ocean_keeper.web3_provider import Web3Provider
+
 
 #%%
 def assert_contract_ABI_versions(ocn,network_name):
@@ -24,6 +25,7 @@ def assert_contract_ABI_versions(ocn,network_name):
         assert artifact_dict['version'] == version_kc_installed, \
             "Artifact version mismatch, ABI files {} != {} specified in environment".format(artifact_dict['version'], version_kc_installed)
     logging.info("Contract ABI {} == installed version {}, confirmed".format(artifact_dict['version'], version_kc_installed))
+
 
 #%% Assert code at this smart contract address
 def assert_contract_code(ocn, network_name):
