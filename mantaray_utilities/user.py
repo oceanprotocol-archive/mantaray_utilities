@@ -1,10 +1,18 @@
 """
 The User() class, a helper class for simulating users of Ocean Protocol.
 """
+import json
 import logging
 import csv
 import os
 import random
+import time
+
+from eth_account import Account as eth_account
+from ocean_keeper.account import Account
+from ocean_utils.http_requests.requests_session import get_requests_session
+from ocean_utils.utils.utilities import get_timestamp
+from urllib3 import request
 
 
 def password_map(address, password_dict):
@@ -99,3 +107,33 @@ def get_account_by_index(ocn, acct_number):
     this_account.password = password_map(this_account.address, password_dict)
     assert this_account.password, "No password loaded for {}".format(this_account.address)
     return this_account
+
+
+def create_account(faucet_url=None, wait=True):
+    timestamp = get_timestamp()
+    private_key = eth_account.create(timestamp)
+    account = Account(private_key.address, None, private_key=private_key.privateKey.hex())
+    if faucet_url:
+        request_ether(faucet_url, account, wait=wait)
+    return account
+
+
+def request_ether(faucet_url, account, wait=True):
+    requests = get_requests_session()
+
+    payload = {"address": account.address}
+    response = requests.post(
+        f'{faucet_url}/faucet',
+        data=json.dumps(payload),
+        headers={'content-type': 'application/json'}
+    )
+    try:
+        response_json = json.loads(response.content)
+        success = response_json.get('success', 'false') == 'true'
+        if success and wait:
+            time.sleep(5)
+
+        return success, response_json.get('message', '')
+    except Exception as err:
+        print(f'Error parsing response {response}: {err}')
+        return None, None
