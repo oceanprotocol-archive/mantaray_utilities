@@ -5,3 +5,4 @@ from . import config
 from . import general
 from . import logging
 from . import user
+from . import events
